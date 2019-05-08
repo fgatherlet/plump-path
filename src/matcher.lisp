@@ -77,6 +77,7 @@
           (mapping ((alt (scan alts)))
             (funcall alt x))))))))
 
+;;(defmethod compile-m-list ((tag (eql '@)) body cont)
 (defmethod compile-m-list ((tag (eql '@)) body cont)
   (destructuring-bind (key val) body
     (lambda (x)
@@ -138,3 +139,44 @@
 
 (defmethod compile-m-list ((tag (eql '?)) body cont)
   (compile-m-list '{} (list* 0 1 body) cont))
+
+
+;; ugly. is there any better way?
+#.`(progn
+     ,@(loop for sym in (list :> :lambda :+ :* :? :>> :{} :@ :@~)
+             collect 
+             `(defmethod compile-m-list ((tag (eql ,sym)) body cont)
+                (compile-m-list ',(intern (symbol-name sym)) body cont))))
+
+#+nil(PROGN
+ (DEFMETHOD COMPILE-M-LIST ((TAG (EQL :>)) BODY CONT)
+   (COMPILE-M-LIST '> BODY CONT))
+ (DEFMETHOD COMPILE-M-LIST ((TAG (EQL :LAMBDA)) BODY CONT)
+   (COMPILE-M-LIST 'LAMBDA BODY CONT))
+ (DEFMETHOD COMPILE-M-LIST ((TAG (EQL :+)) BODY CONT)
+   (COMPILE-M-LIST '+ BODY CONT))
+ (DEFMETHOD COMPILE-M-LIST ((TAG (EQL :*)) BODY CONT)
+   (COMPILE-M-LIST '* BODY CONT))
+ (DEFMETHOD COMPILE-M-LIST ((TAG (EQL :?)) BODY CONT)
+   (COMPILE-M-LIST '? BODY CONT))
+ (DEFMETHOD COMPILE-M-LIST ((TAG (EQL :>>)) BODY CONT)
+   (COMPILE-M-LIST '>> BODY CONT))
+ (DEFMETHOD COMPILE-M-LIST ((TAG (EQL :{})) BODY CONT)
+   (COMPILE-M-LIST '{} BODY CONT))
+ (DEFMETHOD COMPILE-M-LIST ((TAG (EQL :@)) BODY CONT)
+   (COMPILE-M-LIST '@ BODY CONT))
+ (DEFMETHOD COMPILE-M-LIST ((TAG (EQL :@~)) BODY CONT)
+   (COMPILE-M-LIST '@~ BODY CONT)))
+
+;;(defmethod compile-m-list ((tag (eql :@)) body cont)
+;;  (compile-m-list '@ body cont))
+;;(defmethod compile-m-list ((tag (eql :@~)) body cont)
+;;  (compile-m-list '@~ body cont))
+;;(defmethod compile-m-list ((tag (eql :?)) body cont)
+;;  (compile-m-list '? body cont))
+;;(defmethod compile-m-list ((tag (eql :>>)) body cont)
+;;  (compile-m-list '>> body cont))
+;;(defmethod compile-m-list ((tag (eql :{})) body cont)
+;;  (compile-m-list '{} body cont))
+;;;; > lambda + *
+;;;;(ppath: ? >> {}
