@@ -8,9 +8,17 @@
   (push x *result*)
   x)
 
-(defmacro ppath% (dom &body ms)
+#+nil(defmacro ppath% (dom &body ms)
   (let ((matcher (compile-m (cons 'cl:do ms) #'pvalues)))
     `(funcall ,matcher ,dom)))
+
+(defmacro ppath% (dom &body ms)
+  (let ((matcher (gensym "MATCHER")))
+    `(let ((,matcher (compile-m (cons 'cl:do ',ms) #'pvalues)))
+       (funcall ,matcher ,dom))))
+
+
+
 
 
 
