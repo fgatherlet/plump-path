@@ -11,18 +11,18 @@
   (cond
     ((null m)
      cont)
-    ((eql m '*)
+    ((member m '(* :*)) ;;(eql m '*)
      (compile-m-* cont))
-    ((eql m '>)
+    ((member m '(> :>)) ;;(eql m '>)
      (compile-m-> cont))
-    ((eql m '<)
+    ((member m '(< :<)) ;;(eql m '<)
      (compile-m-< cont))
+
+    ((member m '(>> :>>)) ;; (eql m '>>)
+     (compile-m-list '{} '(1 nil * >) cont))
 
     ((keywordp m)
      (compile-m-name m cont))
-
-    ((eql m '>>)
-     (compile-m-list '{} '(1 nil * >) cont))
 
     (t (error "unknown m:~s" m))))
 
@@ -103,7 +103,7 @@
     ;; naive check if body have `:>` matcher.
     (check-type start integer)
     (check-type end (or integer null))
-    (unless (find-if (lambda (x) (member x '(>))) body)
+    (unless (find-if (lambda (x) (member x '(> :>))) body)
       (error "body of \":{}\" must has at least 1 \":>\" to avoid infinite loop."))
     (let (repetition
           (body (if (< 1 (length body)) (cons 'do body) body)))

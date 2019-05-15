@@ -9,5 +9,5 @@
   `(let ((*result* nil)
          (*all-p* t))
      (ppath% ,dom ,@ms)
-     (remove-duplicates *result*)))
+     (remove-duplicates (nreverse *result*))))
 
